@@ -48,4 +48,7 @@ jobs:
       - name: Push image to ACR
         run: |
           docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
-
+          
+      - name: Logout from Azure
+        run: |
+          az logout
