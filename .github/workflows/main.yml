@@ -5,7 +5,9 @@ on:
     branches:
       - main   # Trigger only when code is pushed to main branch
   workflow_dispatch:  # Allow manual trigger
-
+permissions:
+  id-token: write
+  contents: read
 env:
   ACR_NAME: acrsanjay1
   ACR_LOGIN_SERVER: acrsanjay1.azurecr.io
