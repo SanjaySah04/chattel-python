@@ -1,0 +1,50 @@
+name: Build and Push Docker Image to ACR
+
+on:
+  push:
+    branches:
+      - main   # Trigger only when code is pushed to main branch
+  workflow_dispatch:  # Allow manual trigger
+
+env:
+  ACR_NAME: acrsanjay1
+  ACR_LOGIN_SERVER: acrsanjay1.azurecr.io
+  IMAGE_NAME: my-python-app-sanjay
+  IMAGE_TAG: v1
+  AZURE_RESOURCE_GROUP: rg
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Resource Code
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: Azure/login@v2.3.0
+        with:
+          # ClientId of the Azure Service principal created.
+          client-id: 97cb0bea-8c2b-4403-bcd7-d4a75d7730ba
+          # TenantId of the Azure Service principal created.
+          tenant-id: 057505ce-dbe9-4e9e-87dd-2a430677c9b6
+          # Azure subscriptionId
+          subscription-id: f5c536a3-4099-4388-951d-002f72842059
+          # Set this value to true to enable Azure PowerShell Login in addition to Azure CLI login
+          
+      - name: Log in to ACR
+        run: |
+          az acr login --name $ACR_NAME
+
+      - name: Build Docker image
+        run: |
+          docker build -t $IMAGE_NAME:$IMAGE_TAG .
+
+      - name: Tag Docker image
+        run: |
+          docker image tag $IMAGE_NAME:$IMAGE_TAG $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
+
+      - name: Push image to ACR
+        run: |
+          docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
+
